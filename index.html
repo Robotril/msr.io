@@ -193,26 +193,47 @@
             list-style-type: none;
             padding: 0;
             counter-reset: fact-counter;
+            display: grid; /* Use grid for fact layout */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
         }
 
+        /* *** NEW Fact Card Styling for Tab 2 & 5 *** */
         .facts-list li {
             counter-increment: fact-counter;
-            background-color: #fff; 
-            margin-bottom: 10px;
-            padding: 12px 12px 12px 45px;
-            border-left: 4px solid #730018; 
-            border-radius: 6px;
-            box-shadow: 1px 1px 3px rgba(0,0,0,0.05);
+            background-color: #730018; /* Gannon Maroon background */
+            color: #FFC72C; /* Gannon Gold text */
+            font-size: 1.1em;
+            font-weight: 500;
+            min-height: 120px;
+            padding: 15px 15px 15px 70px; /* Padding for the large number */
+            border-radius: 8px;
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.2);
             position: relative;
+            transition: transform 0.2s;
+            line-height: 1.4;
         }
         
+        .facts-list li:hover {
+            transform: translateY(-5px);
+            box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+        }
+
         .facts-list li::before {
-            content: counter(fact-counter) ".";
+            content: counter(fact-counter);
             position: absolute;
             left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2.5em; /* Large number */
             font-weight: bold;
-            color: #FFC72C;
+            color: white; /* White number for pop */
+            border-right: 3px solid #FFC72C;
+            padding-right: 10px;
+            line-height: 1;
         }
+        /* *** END NEW Fact Card Styling *** */
+
 
         /* --- Game Styling (Tabs 3 & 4) --- */
         .game-area {
@@ -372,21 +393,21 @@
     <div id="Tab2" class="tab-content">
         <h2>💡 Comprehensive Fun Facts</h2>
 
-        <div class="fact-section" id="confession-facts">
+        <div class="fact-section">
             <h3>🤫 Confession: Secret Agent Facts</h3>
-            <ul class="facts-list">
+            <ul class="facts-list" id="confession-facts-list">
                 </ul>
         </div>
 
-        <div class="fact-section" id="archbishop-gannon-facts"> 
+        <div class="fact-section"> 
             <h3>🌟 Key Facts About Archbishop John Mark Gannon</h3>
-            <ul class="facts-list">
+            <ul class="facts-list" id="archbishop-gannon-facts-list">
                 </ul>
         </div>
 
-        <div class="fact-section" id="saint-facts">
+        <div class="fact-section">
             <h3>👑 Saint Facts: Carlo Acutis, Joan of Arc, & Edward the Confessor</h3>
-            <ul class="facts-list">
+            <ul class="facts-list" id="saint-facts-list">
                 </ul>
         </div>
     </div>
@@ -447,13 +468,8 @@
 
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
-            
-            // NOTE: Fact loading is handled by DOMContentLoaded event listener below
         }
 
-        // Open the default tab on page load
-        document.getElementById("defaultOpen").click();
-        
         // --- 2. Lightbox/Modal Functionality ---
         const modal = document.getElementById("myModal");
         const modalImg = document.getElementById("img01");
@@ -469,7 +485,6 @@
             modal.style.display = "none";
         }
         
-        // Close modal when user clicks outside the image area
         window.onclick = function(event) {
             if (event.target == modal) {
                 closeModal();
@@ -535,7 +550,8 @@
 
         // --- 4. Dynamic Fact Loading ---
         function loadFacts(category, elementId) {
-            const factsList = document.querySelector(`#${elementId}`);
+            // Updated to select the list by its specific ID
+            const factsList = document.getElementById(elementId);
             if (factsList) {
                 factsList.innerHTML = ''; // Clear existing content
                 factData[category].forEach(factText => {
@@ -549,15 +565,19 @@
         // --- 5. New Logic: Ensure all facts load AFTER the HTML is fully parsed ---
         document.addEventListener('DOMContentLoaded', (event) => {
             // Load ALL facts immediately once the page elements are ready
-            loadFacts('confession', 'confession-facts'); 
-            loadFacts('archbishopGannon', 'archbishop-gannon-facts'); 
-            loadFacts('saints', 'saint-facts'); 
-            loadFacts('gannonUniversityHistory', 'gannon-university-history-list'); // Gannon facts are loaded here
+            loadFacts('confession', 'confession-facts-list'); 
+            loadFacts('archbishopGannon', 'archbishop-gannon-facts-list'); 
+            loadFacts('saints', 'saint-facts-list'); 
+            loadFacts('gannonUniversityHistory', 'gannon-university-history-list'); 
             
-            // Initialize games (optional, but good practice)
+            // Initialize games
             setupGame(saintQuestions, 'saint');
             setupGame(gannonQuestions, 'gannon');
+            
+            // Open the default tab after everything is loaded
+            document.getElementById("defaultOpen").click();
         });
+
 
         // --- 6. Game Question Data (Unchanged) ---
 
